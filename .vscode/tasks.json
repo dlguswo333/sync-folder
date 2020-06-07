@@ -1,0 +1,178 @@
+{
+	// See https://go.microsoft.com/fwlink/?LinkId=733558
+	// for the documentation about the tasks.json format
+    "type": "shell",
+    "echoCommand": true,
+    "presentation" : {
+        "reveal": "always",
+        "panel": "shared"
+    },
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"label": "cl",
+			"type": "shell",
+			"command": "cl",
+			"args": [
+                "\"${fileDirname}\\${fileBasename}\"",
+                "/Fe\"${fileDirname}\\${fileBasenameNoExtension}\""
+			],
+            "group": "build",
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": false,
+                "panel": "shared",
+                "showReuseMessage": true,
+                "clear": false
+            },
+			"problemMatcher": {
+                "fileLocation": [
+                    "relative",
+                    "${workspaceRoot}"
+                ],
+                "pattern": {
+                    // The regular expression. 
+                   //Example to match: helloWorld.c:5:3: warning: implicit declaration of function ‘prinft’
+                    "regexp": "^(.*):(\\d+):(\\d+):\\s+(warning|error):\\s+(.*)$",
+                    "file": 1,
+                    "line": 2,
+                    "column": 3,
+                    "severity": 4,
+                    "message": 5
+                }
+            }
+		},
+        {
+			"label": "vcvarsall amd64",
+			"type": "shell",
+			"command": "vcvarsall amd64",
+			"args": [ 
+			],
+			"group": "build",
+		},
+		{
+			"label": "gcc",
+			"type": "shell",
+			"command": "gcc",
+			"args": [
+				"${fileDirname}\\*.c",
+				"-o",
+				"${fileDirname}\\${fileBasenameNoExtension}" 
+			],
+            "group": "build",
+            "problemMatcher": {
+                "base": "$gcc",
+                "fileLocation": [
+                    "absolute"
+                ]
+            },
+		},
+        {
+			"label": "gcc -g",
+			"type": "shell",
+			"command": "gcc",
+			"args": [
+				"${fileDirname}\\*.c",
+				"-o",
+				"${fileDirname}\\${fileBasenameNoExtension}_g",
+                "-g"
+			],
+			"group": "build",
+			"problemMatcher": {
+                "base": "$gcc",
+                "fileLocation": [
+                    "relative",
+                    "${workspaceRoot}"]
+            }
+        },
+        {
+            "label": "exe",
+            "type": "shell",
+            "command": "\"${fileDirname}\\${fileBasenameNoExtension}\"",
+            "group": "test"
+        },
+        {
+			"label": "g++",
+			"type": "shell",
+			"command": "g++",
+			"args": [
+				"${fileDirname}\\*.cpp",
+				"-o",
+				"${fileDirname}\\${fileBasenameNoExtension}" 
+			],
+			"group": "build",
+			"problemMatcher": {
+                "fileLocation": [
+                    "relative",
+                    "${workspaceFolder}"
+                ],
+                "pattern": {
+                    // The regular expression. 
+                   //Example to match: helloWorld.c:5:3: warning: implicit declaration of function ‘prinft’
+                    "regexp": "^(.*):(\\d+):(\\d+):\\s+(warning|error):\\s+(.*)$",
+                    "file": 1,
+                    "line": 2,
+                    "column": 3,
+                    "severity": 4,
+                    "message": 5
+                }
+			}
+        },
+        {
+			"label": "g++ -res",
+			"type": "shell",
+			"command": "g++",
+			"args": [
+				"${fileDirname}\\${fileBasenameNoExtension}.cpp",
+				"-o",
+				"${fileDirname}\\${fileBasenameNoExtension}" 
+			],
+			"group": "build",
+			"problemMatcher": {
+                "fileLocation": [
+                    "relative",
+                    "${workspaceFolder}"
+                ],
+                "pattern": {
+                    // The regular expression. 
+                   //Example to match: helloWorld.c:5:3: warning: implicit declaration of function ‘prinft’
+                    "regexp": "^(.*):(\\d+):(\\d+):\\s+(warning|error):\\s+(.*)$",
+                    "file": 1,
+                    "line": 2,
+                    "column": 3,
+                    "severity": 4,
+                    "message": 5
+                }
+			}
+        },
+        {
+			"label": "g++ -g",
+			"type": "shell",
+			"command": "g++",
+			"args": [
+				"${fileDirname}\\*.cpp",
+				"-o",
+                "${fileDirname}\\${fileBasenameNoExtension}_g" ,
+                "-g"
+			],
+			"group": "build",
+			"problemMatcher": {
+                "fileLocation": [
+                    "relative",
+                    "${workspaceFolder}"
+                ],
+                "pattern": {
+                    // The regular expression. 
+                   //Example to match: helloWorld.c:5:3: warning: implicit declaration of function ‘prinft’
+                    "regexp": "^(.*):(\\d+):(\\d+):\\s+(warning|error):\\s+(.*)$",
+                    "file": 1,
+                    "line": 2,
+                    "column": 3,
+                    "severity": 4,
+                    "message": 5
+                }
+			}
+        },
+	]
+}
