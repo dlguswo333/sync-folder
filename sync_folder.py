@@ -1,41 +1,62 @@
 import tkinter as tk
+import tkinter.font
 import os
 import os.path
 import tkinter.filedialog
+from core import sync_folder
 
-target_ext=[".jpg", ".jpeg", ".webp", ".txt"]
 
-class Terminal:
-    def __init__(self, pathbox, listbox):
+class Terminal(tk.Frame):
+    def __init__(self, master):
+        tk.Frame.__init__(self, master)
         self.path=""
-        self.pathbox=pathbox
-        self.listbox=listbox
+        self.pathbox=tk.Entry(self, width=50, state="normal", textvariable=str)
+        self.pathbox.pack(side="left", padx=5, ipady=5, expand=True)
+        self.pathbutton=tk.Button(self, text="Set Path", command=self.set_path)
+        self.pathbutton.pack(side="left", padx=10, anchor="n")
+
+
     def set_path(self):
         self.path=tk.filedialog.askdirectory()
         self.pathbox.config(state="normal")
         self.pathbox.delete(0, tk.END)
         self.pathbox.insert(0, self.path)
-        self.pathbox.config(state="disabled")
-        self.get_filenames()
-if __name__=="__main__":
-    mw=tk.Tk()
-    mw.title="sync_folder"
-    mw.geometry("800x600")
-    frame=list()
-    listbox=list()
-    terminal=list()
-    pathbox=list()
-    pathbutton=list()
-    loadbutton=list()
-    for i in range(2):
-        frame.append(tk.Frame(mw))
-        frame[i].pack(side="left" if i==0 else "right", fill="both", expand=True)
-        listbox.append(tk.Listbox(frame[i]))
-        listbox[i].pack(side="top", fill="both", expand=True)
-        pathbox.append(tk.Entry(frame[i], width=30, state="disabled", textvariable=str))
-        terminal.append(Terminal(pathbox[i], listbox[i]))
-        pathbox[i].pack(side="left", anchor="w", expand=True)
-        pathbutton.append(tk.Button(frame[i], overrelief="solid", text="Set Path", command=terminal[i].set_path))
-        pathbutton[i].pack(side="left", anchor="e")
+    
+    def get_path(self):
+        return self.pathbox.get()
 
-    mw.mainloop()
+class Top(tk.Tk):
+    def __init__(self):
+        tk.Tk.__init__(self)
+        self.a_terminal=Terminal(self)
+        self.b_terminal=Terminal(self)
+        self.title="sync_folder"
+        self.resizable(False, False)
+        self.labeltext=tk.StringVar()
+        self.labeltext.set('Hello!')
+
+        # Change default font config.
+        font=tk.font.nametofont("TkDefaultFont")
+        font.configure(family="Helvetica", size=11)
+
+        self.a_terminal.pack(side="top", pady=5, anchor="n", expand=True)
+        self.b_terminal.pack(side="top", pady=5, anchor="n", expand=True)
+
+        self.frame=tk.Frame(self)
+        self.frame.pack(side="bottom", fill="both", pady=5, expand=True)
+
+        self.label=tk.Label(self.frame, textvariable=self.labeltext)
+        self.label.pack(side="left", anchor="w", expand=True)
+
+        syncbutton=tk.Button(self.frame, text="Synchronize", command=lambda :self.sync())
+        syncbutton.pack(side="right", anchor="e", padx=10, expand=True)
+
+        self.mainloop()
+
+    def sync(self):
+        self.labeltext.set('0 files moved')
+        result={"labeltext":self.labeltext, "num_files":0}
+        sync_folder(self.a_terminal.get_path(), self.b_terminal.get_path(), True, result)
+
+if __name__=="__main__":
+    Top()
