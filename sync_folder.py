@@ -17,13 +17,6 @@ class Terminal:
         self.pathbox.insert(0, self.path)
         self.pathbox.config(state="disabled")
         self.get_filenames()
-    def get_filenames(self):
-        if not os.path.isdir(self.path):
-            return False
-        self.filenames=[name for name in os.listdir(self.path) if os.path.isfile(os.path.join(self.path, name)) and os.path.splitext(name)[1] in target_ext]        
-        self.listbox.delete(0, tk.END)
-        for name in self.filenames:
-            self.listbox.insert(tk.END, name)
 if __name__=="__main__":
     mw=tk.Tk()
     mw.title="sync_folder"
@@ -46,5 +39,3 @@ if __name__=="__main__":
         pathbutton[i].pack(side="left", anchor="e")
 
     mw.mainloop()
-    
-    
