@@ -55,14 +55,23 @@ def copy_folder(src_path, dst_path, use_tk=None, result=None):
             try:
                 copy2(src, dst)
                 print(src, 'copied to', dst)
-                if use_tk:
-                    try:
+                try:
+                    if use_tk:
                         result['num_files']+=1
                         result['labeltext'].set(str(result['num_files'])+' files moved')
-                    except:
-                        pass
+                    else:
+                        result['labeltext'].set(str(result['num_files'])+' files moved. '+str(result['num_failed']+' failed.'))
+                except:
+                    # What can I do here? Nothing.
+                    pass
             except:
                 print('Error: Could not copy file '+src, use_tk)
+                try:
+                    result['num_failed']+=1
+                    result['labeltext'].set(str(result['num_files'])+' files moved. '+str(result['num_failed']+' failed.'))
+                except:
+                    # What can I do here? Nothing.
+                    pass
         else:
             # Do not copy the file exists.
             pass
@@ -70,9 +79,17 @@ def copy_folder(src_path, dst_path, use_tk=None, result=None):
     
 # Synchronize folder.
 def sync_folder(a_path, b_path, use_tk=None, result=None):
+    if a_path==b_path:
+        return
     if not copy_folder(a_path, b_path, use_tk, result):
         return
     copy_folder(b_path, a_path, use_tk, result)
+    if use_tk:
+        try:
+            result['labeltext'].set('Success! '+result['labeltext'].get())
+        except:
+            # What can I do here? Nothing.
+            pass
 
 if __name__=='__main__':
     a_path=input()

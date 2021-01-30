@@ -3,8 +3,9 @@ import tkinter.font
 import os
 import os.path
 import tkinter.filedialog
+import threading
+import base64
 from core import sync_folder
-
 
 class Terminal(tk.Frame):
     def __init__(self, master):
@@ -28,12 +29,15 @@ class Terminal(tk.Frame):
 class Top(tk.Tk):
     def __init__(self):
         tk.Tk.__init__(self)
+        self.iconbitmap('sync_folder.ico')
+        self.title('Sync Folder')
         self.a_terminal=Terminal(self)
         self.b_terminal=Terminal(self)
         self.title="sync_folder"
         self.resizable(False, False)
         self.labeltext=tk.StringVar()
         self.labeltext.set('Hello!')
+
 
         # Change default font config.
         font=tk.font.nametofont("TkDefaultFont")
@@ -48,15 +52,22 @@ class Top(tk.Tk):
         self.label=tk.Label(self.frame, textvariable=self.labeltext)
         self.label.pack(side="left", anchor="w", expand=True)
 
-        syncbutton=tk.Button(self.frame, text="Synchronize", command=lambda :self.sync())
-        syncbutton.pack(side="right", anchor="e", padx=10, expand=True)
+        self.syncbutton=tk.Button(self.frame, text="Synchronize", command=lambda :self.sync())
+        self.syncbutton.pack(side="right", anchor="e", padx=10, expand=True)
 
         self.mainloop()
 
     def sync(self):
+        self.syncbutton["state"]="disabled"
+        t=threading.Thread(target=self.inner_sync)
+        t.start()
+
+    def inner_sync(self):
+        # This will help work with multithreading...
         self.labeltext.set('0 files moved')
-        result={"labeltext":self.labeltext, "num_files":0}
+        result={"labeltext":self.labeltext, "num_files":0, "num_failed":0}
         sync_folder(self.a_terminal.get_path(), self.b_terminal.get_path(), True, result)
+        self.syncbutton["state"]="normal"
 
 if __name__=="__main__":
     Top()
