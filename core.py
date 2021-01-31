@@ -58,9 +58,9 @@ def copy_folder(src_path, dst_path, use_tk=None, result=None):
                 try:
                     if use_tk:
                         result['num_files']+=1
-                        result['labeltext'].set(str(result['num_files'])+' files moved')
+                        result['labeltext'].set(str(result['num_files'])+' files copied')
                     else:
-                        result['labeltext'].set(str(result['num_files'])+' files moved. '+str(result['num_failed']+' failed.'))
+                        result['labeltext'].set(str(result['num_files'])+' files copied. '+str(result['num_failed']+' failed.'))
                 except:
                     # What can I do here? Nothing.
                     pass
@@ -68,7 +68,7 @@ def copy_folder(src_path, dst_path, use_tk=None, result=None):
                 print('Error: Could not copy file '+src, use_tk)
                 try:
                     result['num_failed']+=1
-                    result['labeltext'].set(str(result['num_files'])+' files moved. '+str(result['num_failed']+' failed.'))
+                    result['labeltext'].set(str(result['num_files'])+' files copied. '+str(result['num_failed']+' failed.'))
                 except:
                     # What can I do here? Nothing.
                     pass
