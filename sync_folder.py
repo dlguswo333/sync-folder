@@ -31,8 +31,8 @@ class Terminal(tk.Frame):
 class Top(tk.Tk):
     def __init__(self):
         tk.Tk.__init__(self)
-        if os.path.exists('sync_folder.ico'):
-            self.iconbitmap('sync_folder.ico')
+        if os.path.exists('./img/sync_folder.ico'):
+            self.iconbitmap('./img/sync_folder.ico')
         self.title('Sync Folder')
         self.a_terminal=Terminal(self)
         self.b_terminal=Terminal(self)
