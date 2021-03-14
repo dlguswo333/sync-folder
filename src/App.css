@@ -1,0 +1,41 @@
+*{
+  box-sizing: border-box;
+}
+.App {
+  width: 100vw;
+  height: 100vh;
+  justify-content: center;
+  background-color: #333333;
+  text-align: center;
+  padding: 20px;
+  overflow: hidden;
+}
+
+.Box1{
+  width: 95%;
+  background-color: #282c34;
+  margin: 10px auto;
+  padding: 10px;
+  box-shadow: 4px 4px 0 0 #00000044;
+}
+
+.Box2{
+  display: flex;
+  width: 95%;
+  margin: 10px auto;
+  justify-content: center;
+}
+
+.PathInput{
+  width: 90%;
+  background-color: #21212188;
+  outline: none;
+  border-width: 0 0 2px 0;
+  border-color: gray;
+  color: gray;
+  font-size: 12pt;
+  line-height: 12pt;
+}
+.PathInput:focus{
+  border-color: purple;
+}
