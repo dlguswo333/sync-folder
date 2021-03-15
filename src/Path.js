@@ -10,7 +10,12 @@ const Path = forwardRef((props, ref) => {
   // It should be used paired with forwardRef.
   useImperativeHandle(ref, () => ({
     getPath: () => {
-      return refPath.current.value;
+      if (refPath.current)
+        return refPath.current.value;
+    },
+    setPath: (path) => {
+      if (refPath.current)
+        return refPath.current.value = path;
     },
     showLabel: (message) => {
       setLabel(message);
@@ -19,10 +24,11 @@ const Path = forwardRef((props, ref) => {
       }, 3000);
     }
   }));
+
   const setPath = (path) => {
     if (refPath.current)
       return refPath.current.value = path;
-  }
+  };
 
   return (
     <div className="Box2">

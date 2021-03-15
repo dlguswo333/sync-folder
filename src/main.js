@@ -5,8 +5,9 @@ const existsSync = require('fs').existsSync;
 const path = require('path');
 const isDev = require('electron-is-dev');
 
+var mainWindow = null;
 var numCopied = 0;
-var numTotal = 0;
+var numTotal = -1;
 
 function createWindow() {
   // Create the browser window.
@@ -14,6 +15,8 @@ function createWindow() {
     title: 'Sync Folder',
     minWidth: 600,
     minHeight: 450,
+    width: 600,
+    height: 450,
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),
       // Since Electron 12, the default value is true.
@@ -21,11 +24,11 @@ function createWindow() {
       contextIsolation: false
     }
   });
+  mainWindow.removeMenu();
 
   if (isDev) {
     console.log('Running in development');
     mainWindow.loadURL('http://localhost:3000');
-    // mainWindow.loadFile(path.join(__dirname, '../build/index.html'));
   }
   else {
     console.log('Running in production');
@@ -35,22 +38,20 @@ function createWindow() {
       console.log('Loading index.html failed');
     });
   }
-
-  // Open the DevTools.
-  // mainWindow.webContents.openDevTools()
+  return mainWindow;
 }
 
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
 app.whenReady().then(() => {
-  createWindow();
+  mainWindow = createWindow();
 
   app.on('activate', function () {
     // On macOS it's common to re-create a window in the app when the
     // dock icon is clicked and there are no other windows open.
     if (BrowserWindow.getAllWindows().length === 0) {
-      createWindow();
+      mainWindow = createWindow();
     }
   })
 });
@@ -86,13 +87,12 @@ ipcMain.handle('ERROR', (arg) => {
 });
 
 ipcMain.on('progress', (event, arg) => {
-  console.log(numCopied, numTotal);
   event.reply('progress', { numCopied: numCopied, numTotal: numTotal });
 });
 
 const sync = async (path1, path2) => {
   // Main part of the app.
-
+  numTotal = 0;
   if (!existsSync(path1) || !existsSync(path2)) {
     if (!existsSync(path1)) {
       dialog.showErrorBox('ERROR', path1 + ' does not exist!');
@@ -122,6 +122,7 @@ const sync = async (path1, path2) => {
   // Now start copying using file lists.
   await copyDir(list1, path1, path2);
   await copyDir(list2, path2, path1);
+  mainWindow.setProgressBar(-1);
 }
 
 const loopDir = async (directory) => {
@@ -169,9 +170,10 @@ const copyDir = async (srcFileList, srcPath, dstPath) => {
         }
       } catch {
         // TODO Print failed file list to user.
-        console.log('Copying ' + f.name + 'failed!');
+        console.log('Copying ' + f.name + ' failed!');
       }
     }
     ++numCopied;
+    mainWindow.setProgressBar(numCopied / numTotal);
   }
 }

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import './App.css';
 import Path from './Path';
 const { ipcRenderer } = window;
@@ -6,14 +6,27 @@ var intervalHandle = null;
 
 
 function App() {
-  const refPath1 = React.useRef();
-  const refPath2 = React.useRef();
-  const refProgress = React.useRef();
   const [running, setRunning] = useState(false);
   const [progressString, setProgressString] = useState('');
+  const refPath1 = useRef();
+  const refPath2 = useRef();
+  const refProgress = useRef();
 
   useEffect(() => {
     document.title = "Sync Folder";
+    if (refPath1.current) {
+      let path1 = window.localStorage.getItem('path1');
+      refPath1.current.setPath(path1 ? path1 : '');
+    }
+    if (refPath2.current) {
+      let path2 = window.localStorage.getItem('path2');
+      refPath2.current.setPath(path2 ? path2 : '');
+    }
+    intervalHandle = setInterval(() => {
+      if (running) {
+        ipcRenderer.send('progress');
+      }
+    }, 200);
     ipcRenderer.on('progress', (event, arg) => {
       if (running) {
         let numCopied = arg.numCopied;
@@ -22,11 +35,15 @@ function App() {
           // If ref is not loaded yet, get out.
           return;
         }
-        if (numTotal !== 0) {
-          refProgress.current.value = numCopied / numTotal;
+        if (numTotal >= 0) {
           setProgressString(numCopied + ' / ' + numTotal);
-          console.log(progressString);
+          if (numTotal > 0) {
+            if (refProgress.current)
+              refProgress.current.value = numCopied / numTotal;
+          }
           if (numCopied === numTotal) {
+            // Done synchronizing.
+
             refProgress.current.value = 1;
             if (intervalHandle)
               clearInterval(intervalHandle);
@@ -37,12 +54,7 @@ function App() {
         }
       }
     });
-    intervalHandle = setInterval(() => {
-      if (running) {
-        ipcRenderer.send('progress');
-      }
-    }, 200);
-  })
+  });
 
   const syncFolder = async () => {
     if (refPath1.current && refPath2.current) {
@@ -59,6 +71,11 @@ function App() {
       }
       if (refProgress.current)
         refProgress.current.value = 0;
+
+      // Save paths in localStorage for later use.
+      window.localStorage.setItem('path1', path1);
+      window.localStorage.setItem('path2', path2);
+
       setRunning(true);
       // Ask main to synchronize folders and wait.
       await ipcRenderer.invoke('sync-folder', path1, path2);
@@ -77,7 +94,7 @@ function App() {
         <Path ref={refPath2}>
 
         </Path>
-        <button onClick={syncFolder}>
+        <button onClick={syncFolder} disabled={running}>
           Sync
         </button>
       </div>

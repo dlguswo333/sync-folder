@@ -47,6 +47,7 @@
   width: 80%;
   height: 20px;
   margin: 10px auto;
+  color: purple;
 }
 
 .PathInput{
@@ -80,4 +81,7 @@ button:hover{
   background-color: #00000088;
   border-color: purple;
   color: purple;  
+}
+button:disabled{
+  background-color: gray;
 }
